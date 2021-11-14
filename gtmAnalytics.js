@@ -4,7 +4,7 @@
 	var _gtmAnalytics = window.gtmAnalytics || [];
 	window.gtmAnalytics = {
 		screen: "Path: " + window.location.pathname,
-		ver: "20211109",
+		ver: "20211114",
 		debug: false,
 		connected: false,
 		appstate: {
