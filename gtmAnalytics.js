@@ -61,22 +61,6 @@
 					} else {
 						window.gtmAnalytics.heartBeat.timers = [];
 					}
-					if (typeof object.markers != "undefined") {
-						window.gtmAnalytics.push({
-							command: "trackScrollMarkers",
-							markers: object.markers,
-						});
-					} else if (
-						typeof window.gtmAnalytics.scroll.markersLast != "undefined"
-					) {
-						window.gtmAnalytics.push({
-							command: "trackScrollMarkers",
-							markers: window.gtmAnalytics.scroll.markersLast,
-						});
-					} else {
-						window.gtmAnalytics.appstates.markerNames = [];
-						window.gtmAnalytics.scroll.markers = [];
-					}
 					if (typeof object.anchors != "undefined") {
 						window.gtmAnalytics.push({
 							command: "trackScrollAnchors",
@@ -178,25 +162,6 @@
 						window.gtmAnalytics.heartBeat.timersLast =
 							window.gtmAnalytics.heartBeat.timers.slice();
 						window.gtmAnalytics.heartBeat.tick();
-					}
-					break;
-
-				case "trackScrollMarkers":
-					if (typeof object.markers != "undefined") {
-						for (var i = 0; i < object.markers.length; i++) {
-							if (
-								window.gtmAnalytics.scroll.markerNames.indexOf(
-									object.markers[i].name
-								) === -1
-							) {
-								window.gtmAnalytics.scroll.markerNames.push(
-									object.markers[i].name
-								);
-								window.gtmAnalytics.scroll.markers.push(object.markers[i]);
-							}
-						}
-						window.gtmAnalytics.scroll.markersLast =
-							window.gtmAnalytics.scroll.markers.slice();
 					}
 					break;
 
@@ -1037,8 +1002,6 @@
 		},
 		scroll: {
 			anchors: [],
-			markers: [],
-			markerNames: [],
 			track: function () {
 				if (window.gtmAnalytics.freeze) return;
 				var pageHeight = Math.max(
@@ -1051,100 +1014,6 @@
 					window.gtmAnalytics.recount();
 				} else {
 					window.gtmAnalytics.pagePosition = window.pageYOffset;
-				}
-
-				if (window.gtmAnalytics.scroll.markers.length > 0) {
-					var j = 0;
-					for (j = 0; j < window.gtmAnalytics.scroll.markers.length; j++) {
-						if (
-							typeof window.gtmAnalytics.scroll.markers[j].name ==
-								"undefined" ||
-							(typeof window.gtmAnalytics.scroll.markers[j].page !=
-								"undefined" &&
-								window.location.href.indexOf(
-									window.gtmAnalytics.scroll.markers[j].page
-								) == -1)
-						) {
-							continue;
-						}
-
-						nodes = [];
-						subject = null;
-						if (
-							typeof window.gtmAnalytics.scroll.markers[j]["id"] != "undefined"
-						) {
-							nodes = [
-								document.getElementById(
-									window.gtmAnalytics.scroll.markers[j]["id"]
-								),
-							];
-						} else if (
-							typeof window.gtmAnalytics.scroll.markers[j]["class"] !=
-							"undefined"
-						) {
-							nodes = document.getElementsByClassName(
-								window.gtmAnalytics.scroll.markers[j]["class"]
-							);
-						} else if (
-							typeof window.gtmAnalytics.scroll.markers[j]["type"] !=
-							"undefined"
-						) {
-							if (window.gtmAnalytics.scroll.markers[j]["type"] == "document") {
-								subject = document;
-							} else {
-								nodes = document.getElementsByTagName(
-									window.gtmAnalytics.scroll.markers[j]["type"]
-								);
-							}
-						}
-						if (nodes.length > 0) {
-							for (var k = 0; k < nodes.length; k++) {
-								if (
-									nodes[k] &&
-									(typeof window.gtmAnalytics.scroll.markers[j]["id"] ==
-										"undefined" ||
-										(nodes[k].getAttribute("id") &&
-											nodes[k]
-												.getAttribute("id")
-												.indexOf(window.gtmAnalytics.scroll.markers[j]["id"]) >
-												-1)) &&
-									(typeof window.gtmAnalytics.scroll.markers[j]["class"] ==
-										"undefined" ||
-										(nodes[k].getAttribute("class") &&
-											nodes[k]
-												.getAttribute("class")
-												.indexOf(
-													window.gtmAnalytics.scroll.markers[j]["class"]
-												) > -1)) &&
-									(typeof window.gtmAnalytics.scroll.markers[j]["type"] ==
-										"undefined" ||
-										(nodes[k].nodeName &&
-											nodes[k].nodeName.toLowerCase() ==
-												window.gtmAnalytics.scroll.markers[j]["type"]))
-								) {
-									subject = nodes[k];
-									break;
-								}
-							}
-						}
-
-						if (subject) {
-							if (
-								window.gtmAnalytics.pagePosition +
-									window.gtmAnalytics.windowHeight * 0.8 >
-								subject.offsetTop
-							) {
-								window.gtmAnalytics.push({
-									command: "sendEvent",
-									action: "Scroll",
-									label: window.gtmAnalytics.scroll.markers[j].name,
-									value: window.gtmAnalytics.scroll.markers[j].offsetTop,
-									interactive: false,
-								});
-								window.gtmAnalytics.scroll.markers.splice(j, 1);
-							}
-						}
-					}
 				}
 
 				if (window.gtmAnalytics.scroll.anchors.length > 0) {
