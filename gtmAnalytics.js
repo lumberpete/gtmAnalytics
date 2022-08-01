@@ -1,10 +1,10 @@
-(function (undefined) {
+(function () {
 	window.dataLayer = window.dataLayer || [];
 
 	var _gtmAnalytics = window.gtmAnalytics || [];
 	window.gtmAnalytics = {
 		screen: "Path: " + window.location.pathname,
-		ver: "20211114",
+		ver: "20220801",
 		debug: false,
 		connected: false,
 		appstate: {
@@ -201,6 +201,16 @@
 					break;
 
 				case "setConfig":
+					if (typeof object.clickPathDistance != "undefined") {
+						window.gtmAnalytics.click.distance = object.clickPathDistance;
+					}
+					if (typeof object.heartBeatInteractive != "undefined") {
+						window.gtmAnalytics.heartBeat.interactive =
+							object.heartBeatInteractive;
+					}
+					if (typeof object.scrollInteractive != "undefined") {
+						window.gtmAnalytics.scroll.interactive = object.scrollInteractive;
+					}
 					if (typeof object.appstateSampling != "undefined") {
 						if (object.appstateSampling == false) {
 							window.gtmAnalytics.appstates.sampling = false;
@@ -523,6 +533,7 @@
 		},
 		heartBeat: {
 			timers: [],
+			interactive: false,
 			ticks: 0,
 			ticking: null,
 			tick: function () {
@@ -536,7 +547,7 @@
 						action: "HeartBeat",
 						label: window.gtmAnalytics.heartBeat.timers[0] / 1000,
 						value: window.gtmAnalytics.heartBeat.timers[0] / 1000,
-						interactive: false,
+						interactive: window.gtmAnalytics.heartBeat.interactive,
 					});
 					while (window.gtmAnalytics.heartBeat.timers[0] <= current) {
 						window.gtmAnalytics.heartBeat.timers.shift();
@@ -798,6 +809,7 @@
 		click: {
 			controls: [],
 			controlsRules: [],
+			distance: 15,
 			track: function (e) {
 				var e = e || window.event,
 					el = e.target || e.srcElement,
@@ -813,7 +825,7 @@
 						typeof params["type"] != "string") ||
 					typeof params["label"] != "string"
 				) {
-					var address = { node: el, path: el.gtmPath || "", distance: 15 },
+					var address = { node: el, path: el.gtmPath || "", distance: window.gtmAnalytics.click.distance },
 						references,
 						elevated;
 					window.gtmAnalytics.getAddress(address);
@@ -1002,6 +1014,7 @@
 		},
 		scroll: {
 			anchors: [],
+			interactive: false,
 			track: function () {
 				if (window.gtmAnalytics.freeze) return;
 				var pageHeight = Math.max(
@@ -1042,7 +1055,7 @@
 							action: "Scroll",
 							label: window.gtmAnalytics.scroll.anchors[i] + "%",
 							value: window.gtmAnalytics.scroll.anchors[i],
-							interactive: false,
+							interactive: window.gtmAnalytics.scroll.interactive,
 						});
 					}
 					window.gtmAnalytics.scroll.anchors.splice(0, i);
