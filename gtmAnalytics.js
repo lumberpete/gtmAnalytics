@@ -201,6 +201,9 @@
 					break;
 
 				case "setConfig":
+					if (typeof object.queueLengthLimit != "undefined") {
+						window.gtmAnalytics.queueLengthLimit = object.queueLengthLimit;
+					}
 					if (typeof object.clickPathDistance != "undefined") {
 						window.gtmAnalytics.click.distance = object.clickPathDistance;
 					}
@@ -231,6 +234,7 @@
 			}
 		},
 		sendQueue: [],
+		queueLengthLimit: false,
 		send: function (object) {
 			// process appstate-driven system triggers
 			if (
@@ -282,6 +286,16 @@
 				window.dataLayer.push(object);
 			} else {
 				window.gtmAnalytics.sendQueue.push(object);
+				if (
+					window.gtmAnalytics.queueLengthLimit &&
+					window.gtmAnalytics.sendQueue.length >
+						window.gtmAnalytics.queueLengthLimit
+				) {
+					window.gtmAnalytics.sendQueue = window.gtmAnalytics.sendQueue.slice(
+						window.gtmAnalytics.sendQueue.length -
+							window.gtmAnalytics.queueLengthLimit
+					);
+				}
 			}
 		},
 		appstates: {
@@ -825,7 +839,11 @@
 						typeof params["type"] != "string") ||
 					typeof params["label"] != "string"
 				) {
-					var address = { node: el, path: el.gtmPath || "", distance: window.gtmAnalytics.click.distance },
+					var address = {
+							node: el,
+							path: el.gtmPath || "",
+							distance: window.gtmAnalytics.click.distance,
+						},
 						references,
 						elevated;
 					window.gtmAnalytics.getAddress(address);
