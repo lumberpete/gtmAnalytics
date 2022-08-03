@@ -4,7 +4,7 @@
 	var _gtmAnalytics = window.gtmAnalytics || [];
 	window.gtmAnalytics = {
 		screen: "Path: " + window.location.pathname,
-		ver: "20220803",
+		ver: "20220801",
 		debug: false,
 		connected: false,
 		appstate: {
@@ -91,9 +91,8 @@
 
 				case "sendEvent":
 					if (
-						(typeof object.action != "undefined" &&
-							typeof object.label != "undefined") ||
-						typeof object.event != "undefined"
+						typeof object.action != "undefined" &&
+						typeof object.label != "undefined"
 					) {
 						window.gtmAnalytics.send({
 							event: "gtmEvent",
