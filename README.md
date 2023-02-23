@@ -14,7 +14,7 @@ In less perfect situations, this lib makes it much easier to quickly deploy a GT
 ## Why does this javascript code look so ancient?
 
 **Q:** What happened to all the `const`s and `let`s? Why are there no arrow functions and other useful features of modern javascript in this code?
-**A:** Custom HTML and Custom JavasSript tags in GTM support only the ECMAScript 5 version of javascript. 
+**A:** Custom HTML and Custom JavaScript tags in GTM support only the ECMAScript 5 version of javascript. 
 
 **Q:** Okay, so why don't you make it a custom template? The sandboxed javascript available there supports more modern javascript features.
 **A:** The risk of the templates being blocked using the `gtm.blocklist` param in the basic GTM implementation snippet - the only thing guaranteed to be supported by the developers - is much higher than Custom HTML, which is often still required for some of the tracking pixels. That's what makes this more basic solution more reliable.
